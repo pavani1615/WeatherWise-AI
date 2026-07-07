@@ -17,9 +17,9 @@ A real-time weather decision intelligence system designed for daily planning sup
 *Demonstrates how safety indexes, comfort ranges, and warnings instantly adapt to standard, athletic (runner), or sensitive user profiles.*
 ![Dynamic User Profile Thresholding](assets/persona_threshold_evaluation.png)
 
-### 📅 3. Predictive Event & Travel Planner (`predictive_activity_planner.png`)
+### 📅 3. Predictive Event & Travel Planner (`activity_planner.png`)
 *Showcases the event assessor matching selected forecast days against sports, road-trip, or outdoor event thresholds.*
-![Predictive Event & Travel Planner](assets/predictive_activity_planner.png)
+![Predictive Event & Travel Planner](assets/activity_planner.png)
 
 ### 🧪 4. Automated Safety Assertions & Test Suite (`automated_safety_assertions.png`)
 *Proves code testability and correctness under extreme simulated weather vectors (high heat, blizzards, poor AQI).*
