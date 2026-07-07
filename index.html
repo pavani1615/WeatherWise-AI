@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherWise AI - Personal Weather Decision Assistant 🌦</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="weather-sunny"> <!-- Weather theme state class injected here -->
+    <!-- Background mesh glow orbs for premium visual depth -->
+    <div class="bg-glow-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="app-container">
+        
+        <!-- SIDEBAR: Profiles & Bookmarks -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i data-lucide="cloud-lightning" class="logo-icon"></i>
+                    <span>WeatherWise AI</span>
+                </div>
+            </div>
+            
+            <!-- User Profiles Section -->
+            <div class="sidebar-section">
+                <h3><i data-lucide="user"></i> User Persona</h3>
+                <div class="profile-selector">
+                    <select id="userProfile" onchange="changeProfile()">
+                        <option value="standard" selected>Pavani (Standard)</option>
+                        <option value="runner">Active Runner</option>
+                        <option value="sensitive">Sensitive Group (Elderly/Asthma)</option>
+                    </select>
+                </div>
+                <p class="profile-desc" id="profileDesc">Standard recommendations optimized for daily chores and general comfort.</p>
+            </div>
+
+            <!-- Saved Locations Section -->
+            <div class="sidebar-section">
+                <h3><i data-lucide="bookmark"></i> Saved Places</h3>
+                <ul class="saved-cities-list" id="savedCitiesList">
+                    <!-- Cities injected dynamically -->
+                </ul>
+                <button class="btn btn-secondary btn-sm" id="btnSaveCurrent" onclick="saveCurrentCity()">
+                    <i data-lucide="plus"></i> Bookmark Current City
+                </button>
+            </div>
+
+            <!-- AI Configuration Section (Gemini) -->
+            <div class="sidebar-section ai-config-section">
+                <h3><i data-lucide="sparkles"></i> Gemini AI briefing</h3>
+                <p class="section-hint">Toggle real LLM summaries using your API key.</p>
+                <div class="gemini-toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="geminiToggle" onchange="toggleGeminiIntegration()">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Enable Gemini AI</span>
+                </div>
+                <div class="gemini-key-input-container hidden" id="geminiKeyContainer">
+                    <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key" />
+                    <button class="btn btn-primary btn-sm" onclick="saveGeminiKey()">Save Key</button>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="btn btn-text toggle-theme-btn" id="btnThemeToggle" onclick="toggleDarkMode()">
+                    <i data-lucide="moon" id="themeIcon"></i> <span id="themeText">Dark Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            
+            <!-- HEADER / SEARCH BAR -->
+            <header class="app-header">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="citySearch" placeholder="Search city or destination..." oninput="handleSearchInput()" autocomplete="off">
+                        <button class="btn-clear hidden" id="btnClearSearch" onclick="clearSearch()"><i data-lucide="x"></i></button>
+                    </div>
+                    <!-- Autocomplete dropdown suggestions -->
+                    <div class="suggestions-box hidden" id="suggestionsBox"></div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="getCurrentLocation()">
+                        <i data-lucide="map-pin"></i> <span>My Location</span>
+                    </button>
+                    <div class="unit-toggle">
+                        <button class="unit-btn active" id="unitMetric" onclick="changeUnit('metric')">°C</button>
+                        <button class="unit-btn" id="unitImperial" onclick="changeUnit('imperial')">°F</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- LOADING SCREEN / METRIC CARD skeleton -->
+            <div class="loader-container hidden" id="mainLoader">
+                <div class="spinner"></div>
+                <p>Analyzing atmospheric patterns...</p>
+            </div>
+
+            <!-- DASHBOARD GRID -->
+            <div class="dashboard-grid" id="dashboardGrid">
+                
+                <!-- HERO CARD: WEATHERWISE AI DECISION BOARD -->
+                <section class="card hero-card" id="aiDecisionBoard">
+                    <div class="hero-left">
+                        <span class="advisory-tag"><i data-lucide="brain"></i> WeatherWise AI Advice</span>
+                        <h1 id="userGreeting">Good morning, Pavani</h1>
+                        <p class="ai-summary" id="aiSummaryText">
+                            Loading your personal weather brief...
+                        </p>
+                        
+                        <div class="advisory-grid">
+                            <div class="advisory-item">
+                                <div class="adv-icon warm"><i data-lucide="shirt"></i></div>
+                                <div>
+                                    <h4>Clothing Guide</h4>
+                                    <p id="advClothing">Fetching conditions...</p>
+                                </div>
+                            </div>
+                            <div class="advisory-item">
+                                <div class="adv-icon travel"><i data-lucide="car"></i></div>
+                                <div>
+                                    <h4>Travel Risk</h4>
+                                    <p id="advTravel">Analyzing traffic hazard...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-right">
+                        <div class="outdoor-score-widget">
+                            <div class="score-circle">
+                                <svg class="progress-ring" width="120" height="120">
+                                    <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                    <circle class="progress-ring__circle" id="scoreCircleProgress" stroke="#10b981" stroke-width="8" stroke-dasharray="314.16" stroke-dashoffset="314.16" stroke-linecap="round" fill="transparent" r="50" cx="60" cy="60"/>
+                                </svg>
+                                <div class="score-text">
+                                    <span class="score-num" id="activityScoreVal">--</span>
+                                    <span class="score-label">Outdoor Score</span>
+                                </div>
+                            </div>
+                            <p class="score-advice" id="activityScoreDesc">Optimal weather conditions.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC WEATHER CARD (CURRENT WEATHER) -->
+                <section class="card current-weather-card">
+                    <div class="weather-main-info">
+                        <div class="location-details">
+                            <h2 id="cityName">New York, US</h2>
+                            <p id="dateTime">Tuesday, 08:00 AM</p>
+                        </div>
+                        <div class="temp-container">
+                            <span class="current-temp" id="currentTemp">--°</span>
+                            <div class="weather-icon-desc">
+                                <img src="" alt="Weather Icon" id="weatherIcon" class="large-weather-icon">
+                                <span class="weather-description" id="weatherDesc">Scattered Clouds</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-stats-quick">
+                        <div class="quick-stat">
+                            <span class="label">Feels Like</span>
+                            <span class="value" id="feelsLike">--°</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="label">Humidity</span>
+                            <span class="value" id="humidity">--%</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="label">Wind</span>
+                            <span class="value" id="windSpeed">-- km/h</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ADVANCED ANALYTICS METERS -->
+                <section class="card analytics-card">
+                    <h3>Advanced Health & Safety Meters</h3>
+                    <div class="meters-grid">
+                        
+                        <!-- AIR QUALITY INDEX METER -->
+                        <div class="meter-widget">
+                            <div class="widget-header">
+                                <span>Air Quality (AQI)</span>
+                                <i data-lucide="wind"></i>
+                            </div>
+                            <div class="aqi-meter-bar">
+                                <div class="aqi-fill" id="aqiFill"></div>
+                            </div>
+                            <div class="widget-footer">
+                                <span class="badge" id="aqiBadge">Good</span>
+                                <span class="hint" id="aqiDesc">Ideal for outdoors</span>
+                            </div>
+                        </div>
+
+                        <!-- UV INDEX INDEX METER -->
+                        <div class="meter-widget">
+                            <div class="widget-header">
+                                <span>UV Protection</span>
+                                <i data-lucide="sun"></i>
+                            </div>
+                            <div class="uv-meter-bar">
+                                <div class="uv-fill" id="uvFill"></div>
+                            </div>
+                            <div class="widget-footer">
+                                <span class="badge" id="uvBadge">Low</span>
+                                <span class="hint" id="uvDesc">No protection needed</span>
+                            </div>
+                        </div>
+
+                        <!-- WIND COMPASS METER -->
+                        <div class="meter-widget compass-widget">
+                            <div class="widget-header">
+                                <span>Wind Compass</span>
+                                <i data-lucide="compass"></i>
+                            </div>
+                            <div class="compass-container">
+                                <div class="compass-pointer" id="compassPointer"></div>
+                                <div class="compass-rose">
+                                    <span>N</span>
+                                    <span>E</span>
+                                    <span>S</span>
+                                    <span>W</span>
+                                </div>
+                            </div>
+                            <div class="widget-footer center">
+                                <span id="windDirText">North-East</span>
+                            </div>
+                        </div>
+
+                        <!-- SUNRISE / SUNSET -->
+                        <div class="meter-widget sun-widget">
+                            <div class="widget-header">
+                                <span>Daylight Cycle</span>
+                                <i data-lucide="sunset"></i>
+                            </div>
+                            <div class="sun-cycle-container">
+                                <div class="sun-time">
+                                    <i data-lucide="sunrise" class="icon-sunrise"></i>
+                                    <div>
+                                        <span class="time-label">Sunrise</span>
+                                        <span class="time-val" id="sunriseTime">--:--</span>
+                                    </div>
+                                </div>
+                                <div class="sun-time">
+                                    <i data-lucide="sunset" class="icon-sunset"></i>
+                                    <div>
+                                        <span class="time-label">Sunset</span>
+                                        <span class="time-val" id="sunsetTime">--:--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SMART TRAVEL & EVENT PLANNER WIDGET -->
+                <section class="card planner-card">
+                    <div class="card-header-with-action">
+                        <h3><i data-lucide="calendar"></i> WeatherWise Smart Event Planner</h3>
+                    </div>
+                    <p class="section-hint">Select your activity and planning target window to assess suitability.</p>
+                    <div class="planner-form">
+                        <div class="form-group">
+                            <label for="plannerActivity">Activity Type</label>
+                            <select id="plannerActivity" onchange="runEventPlanner()">
+                                <option value="running">Jogging & Cycling</option>
+                                <option value="picnic">Outdoor Picnic / Event</option>
+                                <option value="travel">Road Trip & Travel</option>
+                                <option value="sports">Outdoor Cricket / Football</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="plannerDate">Target Date</label>
+                            <input type="date" id="plannerDate" onchange="runEventPlanner()">
+                        </div>
+                    </div>
+                    
+                    <div class="planner-result-container hidden" id="plannerResultContainer">
+                        <div class="planner-rating-badge" id="plannerRatingBadge">
+                            <span id="plannerRatingLabel">Go</span>
+                        </div>
+                        <div class="planner-details">
+                            <h4 id="plannerStatusTitle">Excellent Conditions</h4>
+                            <ul class="planner-checklist" id="plannerChecklist">
+                                <!-- Planner alerts/suggestions injected here -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VISUAL ANALYTICS (FORECAST CHARTS) -->
+                <section class="card chart-card">
+                    <h3>Visual Suitability Trend (5-Day Trend)</h3>
+                    <p class="section-hint">Hover nodes to view detailed thermal metrics and calculated activity thresholds.</p>
+                    <div class="chart-container">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- 5-DAY DETAILED CARDS -->
+                <section class="card forecast-card-container">
+                    <h3>5-Day Forecast</h3>
+                    <div class="forecast-scroller" id="forecastCardsContainer">
+                        <!-- 5 forecast cards injected dynamically -->
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

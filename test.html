@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherWise AI - Unit Test Studio 🧪</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --color-pass: #10b981;
+            --color-fail: #ef4444;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        h1 span {
+            color: #38bdf8;
+        }
+
+        .btn {
+            background-color: #38bdf8;
+            color: #0f172a;
+            padding: 10px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .summary-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .summary-card.pass-theme {
+            border-left: 5px solid var(--color-pass);
+        }
+
+        .summary-card.fail-theme {
+            border-left: 5px solid var(--color-fail);
+        }
+
+        .summary-info h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .summary-counters {
+            display: flex;
+            gap: 25px;
+        }
+
+        .counter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .counter-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        .counter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .counter-val.pass { color: var(--color-pass); }
+        .counter-val.fail { color: var(--color-fail); }
+
+        .results-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .test-name {
+            font-weight: 600;
+        }
+
+        .test-details {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .badge-pass {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--color-pass);
+        }
+
+        .badge-fail {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--color-fail);
+        }
+
+        .row-pass {
+            background-color: rgba(16, 185, 129, 0.01);
+        }
+
+        .row-fail {
+            background-color: rgba(239, 68, 68, 0.01);
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 20px;
+        }
+
+        /* Mock DOM container hidden from tests */
+        #mockDOM {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <h1>WeatherWise AI <span>Test Studio</span></h1>
+            <button class="btn" onclick="runAllUnitTests()">Execute Tests</button>
+        </header>
+
+        <div class="summary-card" id="summaryStatusCard">
+            <div class="summary-info">
+                <h2 id="summaryHeadline">Tests Pending Execution</h2>
+                <p style="color: var(--text-sub); font-size: 0.85rem;">Click the execute button to start the test suite.</p>
+            </div>
+            
+            <div class="summary-counters">
+                <div class="counter">
+                    <span class="counter-val" id="totalTests">0</span>
+                    <span class="counter-label">Total</span>
+                </div>
+                <div class="counter">
+                    <span class="counter-val pass" id="passedCount">0</span>
+                    <span class="counter-label">Passed</span>
+                </div>
+                <div class="counter">
+                    <span class="counter-val fail" id="failedCount">0</span>
+                    <span class="counter-label">Failed</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 35%">Test Specification</th>
+                        <th style="width: 15%">Result</th>
+                        <th style="width: 50%">Assumptions & Feedback</th>
+                    </tr>
+                </thead>
+                <tbody id="testResults">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-sub); padding: 30px;">
+                            Test studio idle. Ready for instruction execution.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>WeatherWise AI Test Studio v1.0.0 &copy; 2026. Made with Google Antigravity.</p>
+        </div>
+
+    </div>
+
+    <!-- MOCK DOM CONTAINER: Essential to prevent script.js DOM queries from failing -->
+    <div id="mockDOM">
+        <input type="text" id="citySearch">
+        <div id="suggestionsBox"></div>
+        <button id="btnClearSearch"></button>
+        <input type="checkbox" id="geminiToggle">
+        <input type="password" id="geminiApiKey">
+        <div id="geminiKeyContainer"></div>
+        <button id="unitMetric"></button>
+        <button id="unitImperial"></button>
+        <i id="themeIcon"></i>
+        <span id="themeText"></span>
+        <ul id="savedCitiesList"></ul>
+        <select id="userProfile"><option value="standard"></option></select>
+        <p id="profileDesc"></p>
+        <div id="cityName"></div>
+        <div id="dateTime"></div>
+        <div id="currentTemp"></div>
+        <div id="weatherDesc"></div>
+        <div id="feelsLike"></div>
+        <div id="humidity"></div>
+        <div id="windSpeed"></div>
+        <img id="weatherIcon">
+        <div id="userGreeting"></div>
+        <div id="advClothing"></div>
+        <div id="advTravel"></div>
+        <span id="activityScoreVal"></span>
+        <svg><circle id="scoreCircleProgress"></circle></svg>
+        <div id="activityScoreDesc"></div>
+        <div id="aiSummaryText"></div>
+        <div id="aqiFill"></div>
+        <div id="aqiBadge"></div>
+        <div id="aqiDesc"></div>
+        <div id="uvFill"></div>
+        <div id="uvBadge"></div>
+        <div id="uvDesc"></div>
+        <div id="compassPointer"></div>
+        <div id="windDirText"></div>
+        <div id="sunriseTime"></div>
+        <div id="sunsetTime"></div>
+        <input type="date" id="plannerDate">
+        <select id="plannerActivity"></select>
+        <div id="plannerResultContainer"></div>
+        <div id="plannerRatingBadge"></div>
+        <span id="plannerRatingLabel"></span>
+        <div id="plannerStatusTitle"></div>
+        <ul id="plannerChecklist"></ul>
+        <div id="forecastCardsContainer"></div>
+        <div id="mainLoader"></div>
+        <div id="dashboardGrid"></div>
+        <canvas id="forecastChart"></canvas>
+    </div>
+
+    <!-- INJECT CODE UNDER TEST FIRST, THEN TEST RUNNER DEFINITIONS -->
+    <script src="script.js"></script>
+    <script src="test.js"></script>
+    <script>
+        // Auto-run tests on page load for rapid feedback
+        window.addEventListener("load", () => {
+            setTimeout(runAllUnitTests, 200);
+        });
+    </script>
+</body>
+</html>
