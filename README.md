@@ -2,7 +2,9 @@
 
 A real-time weather decision intelligence system designed for daily planning support. Instead of just displaying raw weather metrics (like temperature, humidity, wind, and AQI), **WeatherWise AI** parses atmospheric vectors against customizable user personas to generate actionable recommendations (clothing advice, travel risks, and outdoor score meters).
 ## 🚀 Live Demo
-👉 **[Live Demo - WeatherWise AI](https://weatherassistant.netlify.app/)**
+👉 **[Live Demo - WeatherWise AI](https://weatherassitant.netlify.app/)**
+
+[![Netlify Status](https://img.shields.io/badge/Netlify-Live-brightgreen?logo=netlify)](https://weatherassistant.netlify.app/)
 
 [![Netlify Status](https://img.shields.io/badge/Netlify-Live-brightgreen?logo=netlify)](https://weatherassistant.netlify.app/)
 ## 📸 Core Engineering Showcases (Screenshots)
